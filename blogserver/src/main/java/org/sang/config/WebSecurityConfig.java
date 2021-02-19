@@ -15,6 +15,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +29,7 @@ import java.io.PrintWriter;
  * Created by sang on 2017/12/17.
  */
 @Configuration
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer{
     @Autowired
     UserService userService;
 
@@ -62,16 +65,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     }
                 }).loginProcessingUrl("/login")
                 .usernameParameter("username").passwordParameter("password").permitAll()
-                .and().logout().permitAll().and().csrf().disable().exceptionHandling().accessDeniedHandler(getAccessDeniedHandler());
+                .and().logout().permitAll()
+                .and().csrf().disable().exceptionHandling().accessDeniedHandler(getAccessDeniedHandler())
+                .and().cors();
+        http.headers().frameOptions().disable();
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/blogimg/**","/index.html","/static/**");
+        web.ignoring().antMatchers("/pdf/**","/blogimg/**","/index.html","/static/**");
     }
 
     @Bean
     AccessDeniedHandler getAccessDeniedHandler() {
         return new AuthenticationAccessDeniedHandler();
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE")
+                .maxAge(3600)
+                .allowCredentials(true);
     }
 }

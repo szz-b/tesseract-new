@@ -8,6 +8,7 @@ import DataCharts from '@/components/DataCharts'
 import PostArticle from '@/components/PostArticle'
 import UserMana from '@/components/UserMana'
 import BlogDetail from '@/components/BlogDetail'
+import PdfOcr from "../components/PdfOcr";
 
 Vue.use(Router)
 
@@ -96,6 +97,19 @@ export default new Router({
           iconCls: 'fa fa-bar-chart',
           name: '数据统计',
           component: DataCharts
+        }
+      ]
+    }, {
+      path: '/home',
+      component: Home,
+      name: 'pdf识别',
+      iconCls: 'fa fa-bar-chart',
+      children: [
+        {
+          path: '/pdf',
+          iconCls: 'fa fa-bar-chart',
+          name: 'pdf识别',
+          component: PdfOcr
         }
       ]
     }
